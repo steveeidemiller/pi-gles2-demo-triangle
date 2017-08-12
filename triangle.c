@@ -45,6 +45,7 @@ typedef struct
 	GLuint verbose;
 } OPENGL_STATE_T;
 static OPENGL_STATE_T _state, *state=&_state;
+static float fps_continuous = 0.0;
 
 #define check() assert(glGetError() == 0)
 
@@ -192,18 +193,18 @@ static void init_ogl(OPENGL_STATE_T *state)
  ***********************************************************/
 void init_scene()
 {
-   const GLchar *vShaderSource =
-      "attribute vec4 vertex;                     \n"
-      "void main()                                \n"
-      "{                                          \n"
-      "    gl_Position = vertex;                  \n"
-      "}                                          \n";
+	const GLchar *vShaderSource =
+		"attribute vec4 vertex;     \n"
+		"void main()                \n"
+		"{                          \n"
+		"    gl_Position = vertex;  \n"
+		"}                          \n";
 
-   const GLchar *fShaderSource =
-      "void main()                                         \n"
-      "{                                                   \n"
-      "    gl_FragColor = vec4(0.0, 0.0, 1.0, 0.5);        \n"
-      "}                                                   \n";
+	const GLchar *fShaderSource =
+		"void main()                                    \n"
+		"{                                              \n"
+		"    gl_FragColor = vec4(0.0, 0.0, 1.0, 0.5);   \n"
+		"}                                              \n";
 
 	// Vertex shader
 	state->vshader = glCreateShader(GL_VERTEX_SHADER);
@@ -264,8 +265,13 @@ void init_scene()
  ***********************************************************/
 void render(long delta)
 {
-	printf("%ld microseconds\n", delta);
+	// Show FPS as part of the demo
+	//printf("%ld microseconds\n", delta);
+	float fps = 1000000.0f / (float)delta; //Frames per second is 1E6/delta because delta is in microseconds
+	fps_continuous = (9.0f / 10.0f) * fps_continuous + fps / 10.0f; //Running average of FPS
+	printf("%.2f fps\n", fps_continuous);
 
+	// Render the triangle
 	glUseProgram(state->program);
 	glVertexAttribPointer(state->attr_vertex, 3, GL_FLOAT, 0, 3 * sizeof(GLfloat), 0);
 	glEnableVertexAttribArray(state->attr_vertex);
