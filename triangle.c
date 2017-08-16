@@ -178,7 +178,7 @@ static void init_ogl(OPENGL_STATE_T *state)
 }
 
 /***********************************************************
- * Name: init_scene
+ * Name: begin_scene
  *
  * Arguments:
  *   void
@@ -191,7 +191,7 @@ static void init_ogl(OPENGL_STATE_T *state)
  *   void
  *
  ***********************************************************/
-void init_scene()
+void begin_scene()
 {
 	const GLchar *vShaderSource =
 		"attribute vec4 vertex;     \n"
@@ -279,6 +279,26 @@ void render(long delta)
 }
 
 /***********************************************************
+ * Name: end_scene
+ *
+ * Arguments:
+ *   void
+ *
+ * Description:
+ *   Releases all resources allocated/created in begin_scene()
+ *
+ * Returns:
+ *   void
+ *
+ ***********************************************************/
+void end_scene()
+{
+	// Cleanup
+	glDeleteProgram(state->program);
+	glDeleteBuffers(1, &state->vbo_triangle);
+}
+
+/***********************************************************
  * Name: main
  *
  * Arguments:
@@ -303,7 +323,7 @@ int main ()
 	init_ogl(state);
 
 	// Create simple fragment and vertex shaders, and load geometry buffers
-	init_scene();
+	begin_scene();
 
 	// Set the viewport to fill the screen
 	glViewport(0, 0, state->screen_width, state->screen_height);
@@ -325,8 +345,7 @@ int main ()
 	}
 
 	// Cleanup
-	glDeleteProgram(state->program);
-	glDeleteBuffers(1, &state->vbo_triangle);
+	end_scene();
 
 	// Exit
 	return 0;
